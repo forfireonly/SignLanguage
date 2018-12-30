@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#EEAEEE"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/word_to_lookup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="sign to look up"
+        android:textAllCaps="true"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_gravity="center">
+
+    <Button
+        android:id="@+id/camera_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="8dp"
+        android:text="Take a picture"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="@color/colorPrimary"
+        android:drawableLeft="@drawable/camera"
+        android:drawablePadding="5dp"
+        android:textColor="#FFFFFF"
+        />
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="16dp"
+        android:text="Search"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:background="@color/colorPrimary"
+        android:drawableLeft="@drawable/looking_glass"
+        android:drawablePadding="5dp"
+        android:textColor="#FFFFFF"
+        />
+</LinearLayout>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/camera_image"
+
+
+        />
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/peace_image"
+        android:src="@drawable/peace_sign"
+        android:visibility="invisible"
+        />
+
+
+
+
+
+</LinearLayout>

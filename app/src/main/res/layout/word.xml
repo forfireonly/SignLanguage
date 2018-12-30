@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EEAEEE"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/word_to_lookup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="word to look up"
+        android:textAllCaps="true"
+        android:textAppearance="?android:textAppearanceLarge"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/album_description_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="type word to look up"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:inputType="textMultiLine" />
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:background="@color/colorPrimary"
+        android:textColor="#FFFFFF"
+        />
+
+    <ImageView
+        android:id="@+id/peace_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        android:src="@drawable/four"
+        android:visibility="invisible"/>
+
+</LinearLayout>
