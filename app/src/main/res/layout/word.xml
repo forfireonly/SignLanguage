@@ -17,7 +17,7 @@
         android:textStyle="bold" />
 
     <EditText
-        android:id="@+id/album_description_view"
+        android:id="@+id/word"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="type word to look up"
@@ -25,7 +25,7 @@
         android:inputType="textMultiLine" />
 
     <Button
-        android:id="@+id/search_button"
+        android:id="@+id/search_button_1"
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,7 +39,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        android:src="@drawable/four"
-        android:visibility="invisible"/>
+        />
 
 </LinearLayout>
