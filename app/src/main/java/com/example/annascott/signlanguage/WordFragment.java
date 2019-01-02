@@ -28,31 +28,31 @@ public class WordFragment extends Fragment {
                 if (word.equalsIgnoreCase("zero")){
                     peaceView.setBackgroundResource(R.drawable.zero);
                 }
-                if (word.equalsIgnoreCase("one")){
+                else if (word.equalsIgnoreCase("one")){
                     peaceView.setBackgroundResource(R.drawable.one);
                 }
-                if (word.equalsIgnoreCase("two")){
+                else if (word.equalsIgnoreCase("two")){
                     peaceView.setBackgroundResource(R.drawable.two);
                 }
-                if (word.equalsIgnoreCase("three")){
+                else if (word.equalsIgnoreCase("three")){
                     peaceView.setBackgroundResource(R.drawable.three);
                 }
-                if (word.equalsIgnoreCase("four")){
+                else if (word.equalsIgnoreCase("four")){
                     peaceView.setBackgroundResource(R.drawable.four);
                 }
-                if (word.equalsIgnoreCase("five")){
-                    peaceView.setBackgroundResource(R.drawable.zero);
-                }
-                if (word.equalsIgnoreCase("six")){
+                else if (word.equalsIgnoreCase("five")){
                     peaceView.setBackgroundResource(R.drawable.five);
                 }
-                if (word.equalsIgnoreCase("nine")){
+                else if (word.equalsIgnoreCase("six")){
+                    peaceView.setBackgroundResource(R.drawable.six);
+                }
+                else if (word.equalsIgnoreCase("nine")){
                     peaceView.setBackgroundResource(R.drawable.nine);
                 }
-                if (word.equalsIgnoreCase("seven")){
+                else if (word.equalsIgnoreCase("seven")){
                     peaceView.setBackgroundResource(R.drawable.seven);
                 }
-                if (word.equalsIgnoreCase("eight")){
+                else if (word.equalsIgnoreCase("eight")){
                     peaceView.setBackgroundResource(R.drawable.eight);
                 }
                 else {
