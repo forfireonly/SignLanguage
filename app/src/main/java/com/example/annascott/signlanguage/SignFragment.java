@@ -1,6 +1,7 @@
 package com.example.annascott.signlanguage;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -11,9 +12,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -24,12 +27,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
+import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 
 import static android.content.ContentValues.TAG;
@@ -37,7 +43,28 @@ import static android.content.ContentValues.TAG;
 public class SignFragment extends Fragment {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1888;
     Button button, searchButton;
-    ImageView imageView, peaceView;
+    ImageView  peaceView;
+
+    static {
+        System.loadLibrary("tensorflow_inference");
+    }
+
+    //PATH TO OUR MODEL FILE AND NAMES OF THE INPUT AND OUTPUT NODES
+    private String MODEL_PATH = "file:///android_asset/squeezenet.pb";
+    private String INPUT_NAME = "input_1";
+    private String OUTPUT_NAME = "output_1";
+    private TensorFlowInferenceInterface tf;
+
+    Bitmap bitmap;
+
+    //ARRAY TO HOLD THE PREDICTIONS AND FLOAT VALUES TO HOLD THE IMAGE DATA
+    float[] PREDICTIONS = new float[1000];
+    private float[] floatValues;
+    private int[] INPUT_SIZE = {224,224,3};
+
+    ImageView imageView;
+    TextView resultView;
+    Snackbar progressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,6 +72,9 @@ public class SignFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.sign,
                 container, false);
+
+
+
 
 
 
@@ -66,7 +96,27 @@ public class SignFragment extends Fragment {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                imageView.setImageResource ( R.drawable.number_four);
+               // imageView.setImageResource ( R.drawable.number_four);
+
+
+                try{
+
+                    //READ THE IMAGE FROM ASSETS FOLDER
+                   // InputStream imageStream = getAssets().open("testimage.jpg");
+
+                  //  Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+
+                  //  imageView.setImageBitmap(bitmap);
+
+                  //  progressBar.show();
+
+                    predict(bitmap);
+                }
+                catch (Exception e){
+
+                }
+
+
             }
         });
         return rootView;
@@ -86,7 +136,7 @@ public class SignFragment extends Fragment {
 
                 // convert byte array to Bitmap
 
-                Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0,
+                bitmap = BitmapFactory.decodeByteArray(byteArray, 0,
                         byteArray.length);
 
                 imageView.setImageBitmap(bitmap);
@@ -94,4 +144,99 @@ public class SignFragment extends Fragment {
             }
         }
     }
+
+    //FUNCTION TO COMPUTE THE MAXIMUM PREDICTION AND ITS CONFIDENCE
+    public Object[] argmax(float[] array){
+
+
+        int best = -1;
+        float best_confidence = 0.0f;
+
+        for(int i = 0;i < array.length;i++){
+
+            float value = array[i];
+
+            if (value > best_confidence){
+
+                best_confidence = value;
+                best = i;
+            }
+        }
+
+        return new Object[]{best,best_confidence};
+
+
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public void predict(final Bitmap bitmap){
+
+
+        //Runs inference in background thread
+        new AsyncTask<Integer,Integer,Integer>(){
+
+            @Override
+
+            protected Integer doInBackground(Integer ...params){
+
+                //Resize the image into 224 x 224
+                Bitmap resized_image = ImageUtils.processBitmap(bitmap,224);
+
+                //Normalize the pixels
+                floatValues = ImageUtils.normalizeBitmap(resized_image,224,127.5f,1.0f);
+
+                //Pass input into the tensorflow
+                tf.feed(INPUT_NAME,floatValues,1,224,224,3);
+
+                //compute predictions
+                tf.run(new String[]{OUTPUT_NAME});
+
+                //copy the output into the PREDICTIONS array
+                tf.fetch(OUTPUT_NAME,PREDICTIONS);
+
+                //Obtained highest prediction
+                Object[] results = argmax(PREDICTIONS);
+
+
+                int class_index = (Integer) results[0];
+                float confidence = (Float) results[1];
+
+
+                try{
+
+                    final String conf = String.valueOf(confidence * 100).substring(0,5);
+
+                    //Convert predicted class index into actual label name
+                  //  final String label = ImageUtils.getLabel(getAssets().open("labels.json"),class_index);
+
+
+
+                    //Display result on UI
+                  //  runOnUiThread(new Runnable() {
+                  //      @Override
+                  //      public void run() {
+
+                  //          progressBar.dismiss();
+                   //         resultView.setText(label + " : " + conf + "%");
+
+                   //     }
+                  //  });
+
+                }
+
+                catch (Exception e){
+
+
+               }
+
+
+                return 0;
+            }
+
+
+
+        }.execute(0);
+
+    }
+
 }
