@@ -51,8 +51,8 @@ public class SignFragment extends Fragment {
 
     //PATH TO OUR MODEL FILE AND NAMES OF THE INPUT AND OUTPUT NODES
     private String MODEL_PATH = "file:///android_asset/sign_lang_net.pb";
-    private String INPUT_NAME = "import/0:0";
-    private String OUTPUT_NAME = "import/add_17:0";
+    private String INPUT_NAME = "0:0";
+    private String OUTPUT_NAME = "add_16:0";
     private TensorFlowInferenceInterface tf;
 
     Bitmap bitmap;
@@ -89,7 +89,6 @@ public class SignFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(intent,
                         CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
@@ -186,13 +185,11 @@ public class SignFragment extends Fragment {
                 //Resize the image into 224 x 224
                 Bitmap resized_image = ImageUtils.processBitmap(bitmap,224);
 
-
-
                 //Normalize the pixels
                 floatValues = ImageUtils.normalizeBitmap(resized_image,224,127.5f,1.0f);
 
                 //Pass input into the tensorflow
-                tf.feed(INPUT_NAME,floatValues,1,224,224,3);
+                tf.feed(INPUT_NAME,floatValues,1,3,224,224);
 
                // Log.w("myApp", "input");
                 //compute predictions
