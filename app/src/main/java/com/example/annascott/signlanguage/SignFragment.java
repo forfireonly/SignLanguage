@@ -50,9 +50,9 @@ public class SignFragment extends Fragment {
     }
 
     //PATH TO OUR MODEL FILE AND NAMES OF THE INPUT AND OUTPUT NODES
-    private String MODEL_PATH = "file:///android_asset/squeezenet.pb";
-    private String INPUT_NAME = "input_1";
-    private String OUTPUT_NAME = "output_1";
+    private String MODEL_PATH = "file:///android_asset/sign_lang_net.pb";
+    private String INPUT_NAME = "import/0:0";
+    private String OUTPUT_NAME = "import/add_17:0";
     private TensorFlowInferenceInterface tf;
 
     Bitmap bitmap;
@@ -75,13 +75,17 @@ public class SignFragment extends Fragment {
 
 
 
+        resultView = (TextView) rootView.findViewById(R.id.class_name);
 
+        tf = new TensorFlowInferenceInterface(getContext().getAssets(),MODEL_PATH);
+
+       // progressBar = Snackbar.make(imageView,"PROCESSING IMAGE",Snackbar.LENGTH_INDEFINITE);
 
 
         button = (Button) rootView.findViewById(R.id.camera_button);
         imageView = (ImageView) rootView.findViewById(R.id.camera_image);
         searchButton = (Button) rootView.findViewById(R.id.search_button);
-        peaceView = (ImageView) rootView.findViewById(R.id.peace_image);
+        //peaceView = (ImageView) rootView.findViewById(R.id.peace_image);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,13 +106,13 @@ public class SignFragment extends Fragment {
                 try{
 
                     //READ THE IMAGE FROM ASSETS FOLDER
-                   // InputStream imageStream = getAssets().open("testimage.jpg");
+                   InputStream imageStream = getContext().getAssets().open("eight.png");
 
-                  //  Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+                    Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
 
-                  //  imageView.setImageBitmap(bitmap);
+                    imageView.setImageBitmap(bitmap);
 
-                  //  progressBar.show();
+                   // progressBar.show();
 
                     predict(bitmap);
                 }
@@ -182,18 +186,24 @@ public class SignFragment extends Fragment {
                 //Resize the image into 224 x 224
                 Bitmap resized_image = ImageUtils.processBitmap(bitmap,224);
 
+
+
                 //Normalize the pixels
                 floatValues = ImageUtils.normalizeBitmap(resized_image,224,127.5f,1.0f);
 
                 //Pass input into the tensorflow
                 tf.feed(INPUT_NAME,floatValues,1,224,224,3);
 
+               // Log.w("myApp", "input");
                 //compute predictions
                 tf.run(new String[]{OUTPUT_NAME});
+
+                //Log.w("myApp", "output");
 
                 //copy the output into the PREDICTIONS array
                 tf.fetch(OUTPUT_NAME,PREDICTIONS);
 
+               // Log.w("myApp", "predictions");
                 //Obtained highest prediction
                 Object[] results = argmax(PREDICTIONS);
 
@@ -206,21 +216,23 @@ public class SignFragment extends Fragment {
 
                     final String conf = String.valueOf(confidence * 100).substring(0,5);
 
+
+
                     //Convert predicted class index into actual label name
-                  //  final String label = ImageUtils.getLabel(getAssets().open("labels.json"),class_index);
+                    final String label = ImageUtils.getLabel(getContext().getAssets().open("labels.json"),class_index);
 
 
 
                     //Display result on UI
-                  //  runOnUiThread(new Runnable() {
-                  //      @Override
-                  //      public void run() {
+                    getActivity().runOnUiThread(new Runnable() {
+                       @Override
+                        public void run() {
 
-                  //          progressBar.dismiss();
-                   //         resultView.setText(label + " : " + conf + "%");
+                            progressBar.dismiss();
+                            resultView.setText(label + " : " + conf + "%");
 
-                   //     }
-                  //  });
+                        }
+                    });
 
                 }
 
