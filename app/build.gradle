@@ -16,9 +16,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    aaptOptions {
+        noCompress "tflite"
+    }
 }
 dependencies {
     implementation 'com.android.support:design:28.0.0'
+    compile 'org.tensorflow:tensorflow-lite:+'
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
