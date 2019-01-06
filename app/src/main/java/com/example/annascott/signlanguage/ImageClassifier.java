@@ -85,9 +85,6 @@ public class ImageClassifier {
     /** A ByteBuffer to hold image data, to be feed into Tensorflow Lite as inputs. */
     protected ByteBuffer imgData = null;
 
-    /** multi-stage low pass filter * */
-    private float[][] filterLabelProbArray = null;
-
     private static final int FILTER_STAGES = 3;
     private static final float FILTER_FACTOR = 0.4f;
 
@@ -102,6 +99,7 @@ public class ImageClassifier {
                     });
 
     public String prediction = null;
+    public double proba = 0;
 
     /** holds a gpu delegate */
 //    Delegate gpuDelegate = null;
@@ -119,7 +117,7 @@ public class ImageClassifier {
                                 * DIM_PIXEL_SIZE
                                 * getNumBytesPerChannel());
         imgData.order(ByteOrder.nativeOrder());
-        filterLabelProbArray = new float[FILTER_STAGES][getNumLabels()];
+
         Log.e(TAG, "Created a Tensorflow Lite Image Classifier.");
     }
 
@@ -129,44 +127,17 @@ public class ImageClassifier {
             Log.e(TAG, "Image classifier has not been initialized; Skipped.");
         }
 
-        Log.e(TAG,"Convert");
         convertBitmapToByteBuffer(bitmap);
         // Here's where the magic happens!!!
-        Log.e(TAG,"Run Inference");
+
         long startTime = SystemClock.uptimeMillis();
         runInference();
         long endTime = SystemClock.uptimeMillis();
         Log.e(TAG, "Timecost to run model inference: " + Long.toString(endTime - startTime));
 
-        // Smooth the results across frames.
-        applyFilter();
-        Log.e(TAG, "End Apply Filter");
-
         // get the results.
         getTopKLabels();
         long duration = endTime - startTime;
-    }
-
-    private void applyFilter() {
-        int numLabels = getNumLabels();
-
-        // Low pass filter `labelProbArray` into the first stage of the filter.
-        for (int j = 0; j < numLabels; ++j) {
-            filterLabelProbArray[0][j] +=
-                    FILTER_FACTOR * (getProbability(j) - filterLabelProbArray[0][j]);
-        }
-        // Low pass filter each stage into the next.
-        for (int i = 1; i < FILTER_STAGES; ++i) {
-            for (int j = 0; j < numLabels; ++j) {
-                filterLabelProbArray[i][j] +=
-                        FILTER_FACTOR * (filterLabelProbArray[i - 1][j] - filterLabelProbArray[i][j]);
-            }
-        }
-
-        // Copy the last stage filter output back to `labelProbArray`.
-        for (int j = 0; j < numLabels; ++j) {
-            setProbability(j, filterLabelProbArray[FILTER_STAGES - 1][j]);
-        }
     }
 
     private void recreateInterpreter() {
@@ -238,15 +209,13 @@ public class ImageClassifier {
 
     /** Writes Image data into a {@code ByteBuffer}. */
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
-        Log.e(TAG, "convertBitmapToByteBuffer " + (imgData == null));
         if (imgData == null) {
             return;
         }
         imgData.rewind();
-        Log.e(TAG, "convertBitmapToByteBuffer A " + bitmap.getWidth() + " & " + bitmap.getHeight());
+
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
         // Convert the image to floating point.
-        Log.e(TAG, "convertBitmapToByteBuffer B");
         int pixel = 0;
         long startTime = SystemClock.uptimeMillis();
         for (int i = 0; i < getImageSizeX(); ++i) {
@@ -255,7 +224,6 @@ public class ImageClassifier {
                 addPixelValue(val);
             }
         }
-        Log.e(TAG, "convertBitmapToByteBuffer C");
         long endTime = SystemClock.uptimeMillis();
         Log.e(TAG, "Timecost to put values into ByteBuffer: " + Long.toString(endTime - startTime));
     }
@@ -273,13 +241,21 @@ public class ImageClassifier {
 
         Log.e(TAG, "RetrieveTopK");
         final int size = sortedLabels.size();
+        double cumProba = 0;
+//        Double minProba = null;
         for (int i = 0; i < size; i++) {
             Map.Entry<String, Float> label = sortedLabels.poll();
             String key = label.getKey();
             float val = label.getValue();
-            Log.e(TAG, String.format("%s: %4.5f\n", key, val));
+            Log.e(TAG, String.format("%s: %4.5f\n", key, Math.exp(val * 10)));
+
             prediction = key;
+            cumProba += Math.exp(val * 10);
+            proba = Math.exp(val * 10);
         }
+        Log.e(TAG,proba + " " + cumProba);
+        proba = (proba / cumProba) * 100;
+        // proba = (1 / (1 + proba)) * 100;
     }
 
     /**
@@ -377,7 +353,8 @@ public class ImageClassifier {
 
     /**
      * Run inference using the prepared input in {@link #imgData}. Afterwards, the result will be
-     * provided by getProbability().
+     * provided by getProbability
+     * ().
      *
      * <p>This additional method is necessary, because we don't have a common base for different
      * primitive data types.

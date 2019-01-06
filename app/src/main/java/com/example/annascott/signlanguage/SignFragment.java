@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,12 +22,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.content.pm.PackageManager;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +49,7 @@ public class SignFragment extends Fragment {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1888;
     Button button, searchButton;
     ImageView  peaceView;
+    Bitmap capturedBmp;
 
     static {
         System.loadLibrary("tensorflow_inference");
@@ -68,6 +72,8 @@ public class SignFragment extends Fragment {
 
     ImageView imageView;
     TextView resultView;
+    TextView resultProbaView;
+    LinearLayout resultLayout;
     Snackbar progressBar;
 
     @Override
@@ -76,8 +82,6 @@ public class SignFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.sign,
                 container, false);
-
-        resultView = (TextView) rootView.findViewById(R.id.class_name);
 
         // tf = new TensorFlowInferenceInterface(getContext().getAssets(),MODEL_PATH);
         try {
@@ -93,6 +97,10 @@ public class SignFragment extends Fragment {
         button = (Button) rootView.findViewById(R.id.camera_button);
         imageView = (ImageView) rootView.findViewById(R.id.camera_image);
         searchButton = (Button) rootView.findViewById(R.id.search_button);
+        resultLayout = (LinearLayout) rootView.findViewById(R.id.result_layout);
+        resultView = (TextView) rootView.findViewById(R.id.class_name);
+        resultProbaView = (TextView) rootView.findViewById(R.id.class_proba);
+
         //peaceView = (ImageView) rootView.findViewById(R.id.peace_image);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,24 +112,14 @@ public class SignFragment extends Fragment {
             }
         });
 
+        searchButton.setEnabled(false);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                // imageView.setImageResource ( R.drawable.number_four);
 
-
                 try{
-
-                    //READ THE IMAGE FROM ASSETS FOLDER
-                   InputStream imageStream = getContext().getAssets().open("eight.png");
-
-                    Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-
-                    imageView.setImageBitmap(bitmap);
-
-                   // progressBar.show();
-
-                    predict(bitmap);
+                    predict(capturedBmp);
                 }
                 catch (Exception e){
 
@@ -150,8 +148,19 @@ public class SignFragment extends Fragment {
                 bitmap = BitmapFactory.decodeByteArray(byteArray, 0,
                         byteArray.length);
 
+                capturedBmp = bitmap;
                 imageView.setImageBitmap(bitmap);
 
+                // Update Result Layout
+                resultLayout.setVisibility(View.GONE);
+
+                // Update Search Button State
+                searchButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                searchButton.setEnabled(true);
+            } else {
+                // Update Search Button State
+                searchButton.setBackgroundColor(getResources().getColor(R.color.colorDisabled));
+                searchButton.setEnabled(false);
             }
         }
     }
@@ -186,72 +195,25 @@ public class SignFragment extends Fragment {
         new AsyncTask<Integer,Integer,Integer>(){
 
             @Override
-
             protected Integer doInBackground(Integer ...params){
-
                 Bitmap resized_image = ImageUtils.processBitmap(bitmap,64);
                 classifier.classifyFrame(resized_image);
+
                 Log.e("Sign Language", "PREDICTED LABEL : " + classifier.prediction);
-
-                //Resize the image into 224 x 224
-                // Log.e("Sign Language","POKEMON");
-                // Log.e("Sign Language","WKWKWKWK");
-
-                //Normalize the pixels
-                // floatValues = ImageUtils.normalizeBitmap(resized_image,224,127.5f,1.0f);
-
-                //Pass input into the tensorflow
-//                tf.feed(INPUT_NAME,floatValues,1,3,224,224);
-
-               // Log.w("myApp", "input");
-                //compute predictions
-
-//                tf.run(new String[]{OUTPUT_NAME});
-
-                //Log.w("myApp", "output");
-
-                //copy the output into the PREDICTIONS array
-//                tf.fetch(OUTPUT_NAME,PREDICTIONS);
-
-               // Log.w("myApp", "predictions");
-                //Obtained highest prediction
-                // Object[] results = argmax(PREDICTIONS);
-
-
-                // int class_index = (Integer) results[0];
-                // float confidence = (Float) results[1];
-
-//                try{
-//
-//                    final String conf = String.valueOf(confidence * 100).substring(0,5);
-//
-//
-//
-//                    //Convert predicted class index into actual label name
-//                    final String label = ImageUtils.getLabel(getContext().getAssets().open("labels.json"),class_index);
-//
-//
-//
-//                    //Display result on UI
-//                    getActivity().runOnUiThread(new Runnable() {
-//                       @Override
-//                        public void run() {
-//
-//                            progressBar.dismiss();
-//                            resultView.setText(label + " : " + conf + "%");
-//
-//                        }
-//                    });
-//
-//                }
-//                catch (Exception e){
-//
-//               }
-
-
                 return 0;
             }
 
+            @Override
+            protected void onPostExecute(Integer result) {
+                // Update result View
+                resultLayout.setVisibility(View.VISIBLE);
+                resultProbaView.setText(String.format("%4.2f", classifier.proba ) + "%");
+                resultView.setText(classifier.prediction);
+
+                // Update Search Button State
+                searchButton.setBackgroundColor(getResources().getColor(R.color.colorDisabled));
+                searchButton.setEnabled(false);
+            }
 
 
         }.execute(0);
