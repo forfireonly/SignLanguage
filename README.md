@@ -54,3 +54,6 @@ Return to the previous screen to find Developer options near the bottom.
 Open Developer options, and then scroll down to find and enable USB debugging. 
  6.Run the app on your phone as follows:
 In Android Studio, click the app module in the Project window and then select Run > Run In the Select Deployment Target window, select your phone, and click OK.
+
+### Notes
+We also have a sign language recognition for desktop application which is developed in python. Please check our repository on https://github.com/coalaroot/Pytorch-challenge-side-project
