@@ -1,6 +1,5 @@
-package com.example.annascott.signlanguage;
+package com.annascott.funtorch.signlanguage;
 
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;

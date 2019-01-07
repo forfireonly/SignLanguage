@@ -1,4 +1,4 @@
-package com.example.annascott.signlanguage;
+package com.annascott.funtorch.signlanguage;
 
 import org.junit.Test;
 

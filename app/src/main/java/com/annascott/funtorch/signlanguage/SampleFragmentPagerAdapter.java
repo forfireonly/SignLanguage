@@ -1,4 +1,4 @@
-package com.example.annascott.signlanguage;
+package com.annascott.funtorch.signlanguage;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;

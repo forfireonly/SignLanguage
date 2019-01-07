@@ -20,6 +20,7 @@
         android:id="@+id/word"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:hint="type word to look up"
         android:textColorHint="@color/colorPrimaryDark"
         android:inputType="textMultiLine" />
@@ -29,6 +30,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Search"
         android:background="@color/colorPrimary"
         android:textColor="#FFFFFF"
@@ -38,6 +40,7 @@
         android:id="@+id/peace_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:scaleType="centerCrop"
         />
 
