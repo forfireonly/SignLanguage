@@ -10,21 +10,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-package com.example.annascott.signlanguage;
+package com.annascott.funtorch.signlanguage;
 
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.RelativeSizeSpan;
 import android.util.Log;
-import java.io.BufferedReader;
+
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
@@ -32,8 +27,6 @@ import java.nio.channels.FileChannel;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -247,11 +240,11 @@ public class ImageClassifier {
             Map.Entry<String, Float> label = sortedLabels.poll();
             String key = label.getKey();
             float val = label.getValue();
-            Log.e(TAG, String.format("%s: %4.5f\n", key, Math.exp(val * 10)));
+            Log.e(TAG, String.format("%s: %4.5f\n", key, Math.exp(val * 20)));
 
             prediction = key;
-            cumProba += Math.exp(val * 10);
-            proba = Math.exp(val * 10);
+            cumProba += Math.exp(val * 20);
+            proba = Math.exp(val * 20);
         }
         Log.e(TAG,proba + " " + cumProba);
         proba = (proba / cumProba) * 100;

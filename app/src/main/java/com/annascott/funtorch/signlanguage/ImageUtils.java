@@ -1,13 +1,10 @@
-package com.example.annascott.signlanguage;
+package com.annascott.funtorch.signlanguage;
 
 
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.os.Environment;
-import java.io.File;
-import java.io.FileOutputStream;
+
 import java.io.InputStream;
 import org.json.*;
 
