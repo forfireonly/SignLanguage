@@ -56,3 +56,18 @@ In Android Studio, click the app module in the Project window and then select Ru
 
 ### Notes
 We also developed a sign language interpretation desktop application which is developed in python. Please check our repository on https://github.com/coalaroot/Pytorch-challenge-side-project
+
+### More about our project
+- [Pitch Deck](https://goo.gl/Wr9qCF)
+
+- [Landing Page](https://mariannajan.github.io/funtorchSignLanguage/)
+
+- [Introduction Video](https://goo.gl/Rz96JJ)
+
+- [Demo Desktop Application](https://youtu.be/AvHXbdcuj8M)
+
+- [MacOS Application](https://goo.gl/XaJgSu)
+
+- [Windows Application](http://bit.ly/funtorch_win64)
+
+- [Mobile Application](https://goo.gl/9oHJhG)
